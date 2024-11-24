@@ -2,6 +2,7 @@ const express = require('express');
 const { createServer } = require('http');
 const env = require('dotenv').config();
 const { Server } = require('socket.io');
+const events = require('./webSocketEvents/events');
 
 const cors = require('cors');
 
@@ -23,10 +24,9 @@ app.use('/', routes);
 //handle ws connection
 io.on('connection', (socket) => {
     console.log('New connection:', socket.id);
-    //handle disconnection
-    socket.on('disconnect', () => {
-        console.log('Connection disconnected:', socket.id);
-    });
+    events.joinRoom(socket);
+    events.leaveRoom(socket);
+    events.userDisconnect(socket);
 });
 
 console.log('Server listening on port ', process.env.PORT);
