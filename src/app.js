@@ -23,8 +23,11 @@ app.use('/', routes);
 
 //handle ws connection
 io.on('connection', (socket) => {
-    console.log('New connection:', socket.id);
+    console.log('New connection to WS server:', socket.id);
     events.joinRoom(socket);
+    events.sdpOffer(socket);
+    events.sdpAnswer(socket);
+    events.iceCandidates(socket);
     events.leaveRoom(socket);
     events.userDisconnect(socket);
 });
