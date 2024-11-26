@@ -1,6 +1,12 @@
 const userDisconnect = (socket) => {
     socket.on('disconnect', () => {
+        const rooms = Array.from(socket.rooms);
+
+        // Remove the socket's own room (named by its ID)
+        const joinedRooms = rooms.filter((room) => room !== socket.id);
+
         console.log('Connection disconnected:', socket.id);
+        console.log('Rooms the socket was in:', joinedRooms);
     });
 };
 
@@ -21,7 +27,8 @@ const sdpAnswer = (socket) => {
         console.log(
             socket.id,
             'has sent answer to room members in room :',
-            roomId
+            roomId,
+            answer
         );
         socket.broadcast.to(roomId).emit('sdpAnswer', answer);
     });
@@ -32,7 +39,8 @@ const iceCandidates = (socket) => {
         console.log(
             socket.id,
             'has sent cadidate to room members in room :',
-            roomId
+            roomId,
+            candidate
         );
         socket.broadcast.to(roomId).emit('iceCandidates', candidate);
     });
@@ -46,7 +54,8 @@ const joinRoom = (socket) => {
             socket.server.sockets.adapter.rooms.get(roomId) || []
         );
         console.log(`Users in room ${roomId}:`, usersInRoom);
-        socket.to(roomId).emit('joinRoom', socket.id);
+        socket.emit('selfJoinRoom', socket.id);
+        socket.broadcast.to(roomId).emit('joinRoom', socket.id);
     });
 };
 
